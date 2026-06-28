@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GarageGo - Mechanic Dashboard</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:#f3f5fa; color:#333; padding:15px; }
+        .container { width:100%; max-width:700px; margin:15px auto; }
+        
+        /* Top Premium Header bar */
+        .dash-header { background:linear-gradient(135deg,#ff9800,#ff5722); color:white; padding:25px 20px; border-radius:16px; margin-bottom:20px; box-shadow:0 8px 15px rgba(0,0,0,.1); display:flex; justify-content:space-between; align-items:center; }
+        .dash-header h2 { font-size:22px; }
+        .logout-btn { color:white; background:rgba(255,255,255,0.2); padding:6px 12px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:bold; }
+        
+        /* Analytics Cards Grid */
+        .analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; }
+        .stat-card { background:white; padding:20px; border-radius:14px; box-shadow:0 4px 10px rgba(0,0,0,.04); text-align:center; }
+        .stat-card h3 { font-size:14px; color:#666; margin-bottom:5px; }
+        .stat-card p { font-size:28px; font-weight:bold; color:#ff5722; }
+
+        /* Action Form Block */
+        .card-box { background:white; padding:20px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,.04); margin-bottom:20px; }
+        .card-title { font-size:17px; font-weight:bold; margin-bottom:15px; color:#444; border-bottom:2px solid #fff3e0; padding-bottom:8px; }
+        
+        .status-badge { display:inline-block; padding:6px 14px; border-radius:20px; font-weight:bold; font-size:14px; margin-bottom:15px; }
+        .status-online { background:#e8f5e9; color:#2e7d32; }
+        .status-offline { background:#ffebee; color:#c62828; }
+        
+        .btn-action { display:block; width:100%; padding:12px; text-align:center; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition:.3s; font-size:15px; }
+        .btn-orange { background:#ff5722; }
+        .btn-orange:hover { background:#e64a19; }
+        
+        /* Price Editor rows */
+        .price-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #eee; }
+        .price-input { width:40%; padding:8px 12px; border:1px solid #ddd; border-radius:8px; text-align:right; font-size:15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="dash-header">
+        <div>
+            <h2>🔧 {{ mechanic.shop_name }}</h2>
+            <p style="font-size:13px; opacity:.9; margin-top:2px;">📍 {{ mechanic.district.name }}</p>
+        </div>
+        <a href="{% url 'mechanic_logout' %}" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="stat-card">
+            <h3>Total Customers</h3>
+            <p>{{ total_calls }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Verification State</h3>
+            <p style="font-size:16px; margin-top:12px; color:{% if mechanic.user.is_mechanic %}#2e7d32{% else %}#ff5722{% endif %};">
+                {% if mechanic.user.is_mechanic %}Verified Active{% else %}Pending{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="card-box" style="text-align:center;">
+        <div class="card-title">Dukaan Ka Live Status</div>
+        {% if mechanic.is_available %}
+            <span class="status-badge status-online">🟢 Aap Abhi Online Hain (Dukaan Khuli Hai)</span>
+        {% else %}
+            <span class="status-badge status-offline">🔴 Aap Abhi Offline Hain (Dukaan Band Hai)</span>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="toggle_status">
+            <button type="submit" class="btn-action" style="background:#333;">
+                {% if mechanic.is_available %}Dukaan Ko Offline Karein{% else %}Dukaan Ko Online Karein{% endif %}
+            </button>
+        </form>
+    </div>
+
+    <div class="card-box">
+        <div class="card-title">Apni Services Ka Rate Card Badlein</div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_prices">
+            
+            {% for sp in mechanic.mechanicserviceprice_set.all %}
+                <div class="price-row">
+                    <span style="font-weight:600; color:#555;">⚙️ {{ sp.service.name }}</span>
+                    <input type="number" name="price_{{ sp.id }}" value="{{ sp.base_price|floatformat:0 }}" class="price-input">
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn-action btn-orange" style="margin-top:10px;">Rate Card Save Karein</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

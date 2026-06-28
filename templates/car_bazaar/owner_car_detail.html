@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Audit Command Desk</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:#f3f5fa; padding:20px; }
+        .wrapper { max-width:900px; margin:auto; background:white; padding:25px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.05); }
+        .grid-images { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin:20px 0; }
+        .img-box { background:#f8fafc; border:1px solid #ddd; padding:10px; border-radius:10px; text-align:center; }
+        .img-box img { width:100%; height:140px; object-fit:cover; border-radius:6px; margin-bottom:8px; }
+        .meta-box { background:#fcf8f2; border-left:5px solid #ff5722; padding:15px; border-radius:6px; margin-bottom:20px; }
+        .btn-action { padding:12px 24px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px; }
+        input, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-top:5px; margin-bottom:12px; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h2 style="color:#ff5722; margin-bottom:15px;">🔍 Vehicle Audit Desk: {{ car.brand }} {{ car.car_name }}</h2>
+    
+    <div class="meta-box">
+        <h3>👤 Seller Contact & Identity Logs</h3>
+        <p style="margin-top:6px; font-size:15px;"><strong>Seller Name:</strong> {{ car.seller_name }}</p>
+        <p><strong>Direct Mobile:</strong> <a href="tel:{{ car.seller_phone }}" style="color:#007bff; font-weight:bold;">{{ car.seller_phone }}</a></p>
+        <p><strong>City Area:</strong> 📍 {{ car.city.name }} | 📋 RC: {{ car.has_rc_card }} | 📄 NOC: {{ car.has_noc }}</p>
+    </div>
+
+    <h3>📸 Uploaded Inspection Images (Check for Phone Numbers)</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="grid-images">
+            <div class="img-box">
+                <span style="font-size:12px; font-weight:bold; color:#666;">1. Front View</span>
+                {% if car.image_front %}<img src="{{ car.image_front.url }}">{% endif %}
+                <input type="file" name="image_front" accept="image/*" style="font-size:11px;">
+            </div>
+            <div class="img-box">
+                <span style="font-size:12px; font-weight:bold; color:#666;">2. Back View</span>
+                {% if car.image_back %}<img src="{{ car.image_back.url }}">{% endif %}
+                <input type="file" name="image_back" accept="image/*" style="font-size:11px;">
+            </div>
+            <div class="img-box">
+                <span style="font-size:12px; font-weight:bold; color:#666;">3. Interior Cabin</span>
+                {% if car.image_interior %}<img src="{{ car.image_interior.url }}">{% endif %}
+                <input type="file" name="image_interior" accept="image/*" style="font-size:11px;">
+            </div>
+            <div class="img-box">
+                <span style="font-size:12px; font-weight:bold; color:#666;">4. Dashboard Log</span>
+                {% if car.image_dashboard %}<img src="{{ car.image_dashboard.url }}">{% endif %}
+                <input type="file" name="image_dashboard" accept="image/*" style="font-size:11px;">
+            </div>
+        </div>
+
+        <label><strong>Final Selling Price for Marketplace (₹):</strong></label>
+        <input type="number" name="expected_price" value="{{ car.expected_price|floatformat:0 }}" required>
+
+        <label><strong>Edit Public Description:</strong></label>
+        <textarea name="description" rows="3">{{ car.description }}</textarea>
+
+        <div style="display:flex; gap:15px; margin-top:15px;">
+            <button type="submit" name="action" value="update_and_approve" class="btn-action" style="background:#28a745; color:white; flex:2;">
+                💾 Save Changes & Approve To Market
+            </button>
+            <button type="submit" name="action" value="reject_delete" class="btn-action" style="background:#dc3545; color:white; flex:1;" onclick="return confirm('Kya aap sach me is listing ko reject/delete karna chahte hain?')">
+                ❌ Reject & Delete
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

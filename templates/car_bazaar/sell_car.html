@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GarageGo - Sell Your Car</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f3f5fa;
+    color:#333;
+}
+
+/* ===========================
+        PREMIUM NAVBAR
+=========================== */
+
+.main-navbar{
+    background:#1a1c23;
+    padding:12px 20px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+    width:100%;
+}
+
+.nav-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    max-width:900px;
+    margin:auto;
+}
+
+.nav-logo{
+    color:#ff5722;
+    font-size:22px;
+    font-weight:700;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.nav-links{
+    display:flex;
+    list-style:none;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-item{
+    color:#cbd5e1;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    padding:8px 16px;
+    border-radius:8px;
+    transition:.25s;
+}
+
+.nav-item:hover{
+    color:#fff;
+    background:rgba(255,255,255,.08);
+}
+
+.sell-btn{
+    background:#ff5722;
+    color:#fff!important;
+    font-weight:600;
+}
+
+.sell-btn:hover{
+    background:#e64a19!important;
+}
+
+.admin-badge{
+    background:#007bff;
+    color:white!important;
+}
+
+.dash-badge{
+    background:#28a745;
+    color:white!important;
+}
+
+.logout-btn{
+    color:#ef4444!important;
+}
+
+.menu-toggle{
+    display:none;
+    flex-direction:column;
+    background:none;
+    border:none;
+    cursor:pointer;
+    gap:5px;
+}
+
+.menu-toggle .bar{
+    width:22px;
+    height:3px;
+    background:#cbd5e1;
+    border-radius:2px;
+    transition:.3s;
+}
+
+/* ===========================
+      PAGE DESIGN
+=========================== */
+
+.page-wrapper{
+    padding:20px;
+    display:flex;
+    justify-content:center;
+}
+
+.form-card{
+    background:white;
+    width:100%;
+    max-width:650px;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+
+h2{
+    color:#ff5722;
+    margin-bottom:20px;
+    text-align:center;
+    font-size:24px;
+    border-bottom:2px solid #ff5722;
+    padding-bottom:10px;
+}
+
+.section-tag{
+    font-size:14px;
+    font-weight:bold;
+    color:#333;
+    text-transform:uppercase;
+    margin:20px 0 10px;
+    background:#f0f4f8;
+    padding:6px 10px;
+    border-radius:6px;
+    display:block;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+    color:#555;
+    font-size:13px;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    outline:none;
+    font-size:14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#ff5722;
+}
+
+.flex-group{
+    display:flex;
+    gap:12px;
+}
+
+.flex-item{
+    flex:1;
+}
+
+.btn-submit{
+    width:100%;
+    padding:14px;
+    background:linear-gradient(135deg,#ff9800,#ff5722);
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:20px;
+    box-shadow:0 4px 10px rgba(255,87,34,.3);
+}
+
+.msg{
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.menu-toggle{
+display:flex;
+}
+
+.nav-links{
+display:none;
+flex-direction:column;
+position:absolute;
+top:100%;
+left:0;
+width:100%;
+background:#1a1c23;
+padding:20px;
+gap:12px;
+box-shadow:0 10px 15px rgba(0,0,0,.2);
+}
+
+.nav-links.active{
+display:flex;
+}
+
+.nav-item{
+width:100%;
+text-align:center;
+padding:12px;
+}
+
+.page-wrapper{
+padding:10px;
+}
+
+.flex-group{
+flex-direction:column;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="main-navbar">
+
+<div class="nav-container">
+
+<a href="/" class="nav-logo">
+🚗 GarageGo
+</a>
+
+<button class="menu-toggle" id="mobile-menu">
+
+<span class="bar"></span>
+<span class="bar"></span>
+<span class="bar"></span>
+
+</button>
+
+<ul class="nav-links" id="nav-links-menu">
+
+<li>
+<a href="/" class="nav-item">
+Home
+</a>
+</li>
+
+<li>
+<a href="{% url 'car_bazaar:car_marketplace' %}" class="nav-item">
+Buy Cars
+</a>
+</li>
+
+<li>
+<a href="{% url 'car_bazaar:sell_car' %}" class="nav-item sell-btn">
+➕ Sell Your Car
+</a>
+</li>
+
+{% if user.is_authenticated %}
+
+{% if user.is_superuser %}
+
+<li>
+<a href="{% url 'owner_dashboard' %}" class="nav-item admin-badge">
+👑 Owner Desk
+</a>
+</li>
+
+{% else %}
+
+<li>
+<a href="{% url 'mechanic_dashboard' %}" class="nav-item dash-badge">
+🛠 Dashboard
+</a>
+</li>
+
+{% endif %}
+
+<li>
+<a href="{% url 'mechanic_logout' %}" class="nav-item logout-btn">
+Logout
+</a>
+</li>
+
+{% else %}
+
+<li>
+<a href="{% url 'mechanic_login' %}" class="nav-item">
+Sign In
+</a>
+</li>
+
+{% endif %}
+
+</ul>
+
+</div>
+
+</nav>
+
+<div class="page-wrapper">
+
+<div class="form-card">
+
+<h2>
+🚗 Sell Your Vehicle (Full Ledger Form)
+</h2>
+
+{% if message %}
+<div class="msg">
+{{ message }}
+</div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<span class="section-tag">👤 Seller Identity (Owner Dashboard Ke Liye)</span>
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>Seller Full Name:</label>
+<input type="text" name="seller_name" placeholder="Enter Full Name" required>
+</div>
+
+<div class="flex-item">
+<label>Contact Mobile Number:</label>
+<input type="number" name="seller_phone" placeholder="91xxxxxxxx" required>
+</div>
+
+</div>
+
+
+<span class="section-tag">⚙️ Vehicle Core Specifications</span>
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>Brand (Company):</label>
+<input type="text" name="brand" placeholder="e.g. Maruti, Hyundai" required>
+</div>
+
+<div class="flex-item">
+<label>Car Model Name:</label>
+<input type="text" name="car_name" placeholder="e.g. Swift VXI, i20" required>
+</div>
+
+</div>
+
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>Model Year:</label>
+<input type="number" name="model_year" placeholder="e.g. 2021" required>
+</div>
+
+<div class="flex-item">
+<label>Total KMs Driven:</label>
+<input type="number" name="kms_driven" placeholder="e.g. 35000" required>
+</div>
+
+</div>
+
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+
+<label>Fuel Type:</label>
+
+<select name="fuel_type">
+<option value="Petrol">Petrol</option>
+<option value="Diesel">Diesel</option>
+<option value="CNG">CNG</option>
+<option value="Electric">Electric</option>
+</select>
+
+</div>
+
+<div class="flex-item">
+
+<label>Car Condition:</label>
+
+<select name="condition">
+<option value="Excellent">Excellent (Ekdum Nayi)</option>
+<option value="Good">Good (Achhi Condition)</option>
+<option value="Fair">Fair (Chalane Layak)</option>
+</select>
+
+</div>
+
+</div>
+
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>Expected Price (₹):</label>
+<input type="number" name="expected_price" placeholder="450000" required>
+</div>
+
+<div class="flex-item">
+
+<label>Select City / Market Area:</label>
+
+<select name="city" required>
+
+<option value="">-- Choose City --</option>
+
+{% for city in cities %}
+
+<option value="{{ city.id }}">
+📍 {{ city.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+</div>
+
+
+<span class="section-tag">📄 Document & Legal Status</span>
+
+<div class="form-group">
+
+<label>Insurance Status Details:</label>
+
+<input
+type="text"
+name="insurance_status"
+placeholder="Third Party Active till Aug 2027"
+required>
+
+</div>
+
+
+<div class="form-group"
+style="display:flex;gap:20px;background:#fff3e0;padding:12px;border-radius:8px;">
+
+<label style="display:flex;align-items:center;gap:6px;font-weight:bold;cursor:pointer;">
+<input type="checkbox" name="has_rc_card" style="width:auto;">
+RC Card Available
+</label>
+
+<label style="display:flex;align-items:center;gap:6px;font-weight:bold;cursor:pointer;">
+<input type="checkbox" name="has_noc" style="width:auto;">
+NOC Available
+</label>
+
+</div>
+
+
+<span class="section-tag">
+📸 Upload Vehicle Photos (4 Crucial Angles)
+</span>
+
+<p style="font-size:11px;color:#d32f2f;margin-bottom:10px;font-style:italic;">
+*Note: Make sure seller phone numbers are not visible on these images.
+</p>
+
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>1. Front View Photo:</label>
+<input type="file" name="image_front" accept="image/*" required>
+</div>
+
+<div class="flex-item">
+<label>2. Back/Rear Photo:</label>
+<input type="file" name="image_back" accept="image/*" required>
+</div>
+
+</div>
+
+
+<div class="flex-group form-group">
+
+<div class="flex-item">
+<label>3. Interior Seat/Cabin Photo:</label>
+<input type="file" name="image_interior" accept="image/*" required>
+</div>
+
+<div class="flex-item">
+<label>4. Dashboard/Odometer Photo:</label>
+<input type="file" name="image_dashboard" accept="image/*" required>
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Additional Description:</label>
+
+<textarea
+name="description"
+rows="3"
+placeholder="Engine condition, tyre health, scratch logs..."></textarea>
+
+</div>
+
+
+<button type="submit" class="btn-submit">
+Verification Ke Liye Send Karein
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const mobileMenu=document.getElementById("mobile-menu");
+const navLinks=document.getElementById("nav-links-menu");
+
+mobileMenu.addEventListener("click",function(){
+
+navLinks.classList.toggle("active");
+
+const bars=mobileMenu.querySelectorAll(".bar");
+
+if(navLinks.classList.contains("active")){
+
+bars[0].style.transform="rotate(-45deg) translate(-5px,6px)";
+bars[1].style.opacity="0";
+bars[2].style.transform="rotate(45deg) translate(-4px,-5px)";
+
+}
+else{
+
+bars[0].style.transform="none";
+bars[1].style.opacity="1";
+bars[2].style.transform="none";
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

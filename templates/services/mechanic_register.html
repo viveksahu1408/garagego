@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GarageGo - Join as Mechanic</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI',sans-serif;
+        }
+
+        body{
+            background:#f3f5fa;
+            color:#333;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .main-navbar{
+            background:#1a1c23;
+            padding:12px 20px;
+            position:sticky;
+            top:0;
+            z-index:1000;
+            box-shadow:0 4px 15px rgba(0,0,0,.15);
+        }
+
+        .nav-container{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            max-width:900px;
+            margin:auto;
+        }
+
+        .nav-logo{
+            color:#ff5722;
+            font-size:22px;
+            font-weight:700;
+            text-decoration:none;
+        }
+
+        .nav-links{
+            display:flex;
+            list-style:none;
+            gap:15px;
+            align-items:center;
+        }
+
+        .nav-item{
+            color:#cbd5e1;
+            text-decoration:none;
+            font-size:14px;
+            font-weight:500;
+            padding:8px 16px;
+            border-radius:8px;
+            transition:.25s;
+        }
+
+        .nav-item:hover{
+            background:rgba(255,255,255,.08);
+            color:white;
+        }
+
+        .sell-btn{
+            background:#ff5722;
+            color:white !important;
+            font-weight:600;
+        }
+
+        .admin-badge{background:#007bff;color:white!important;}
+        .dash-badge{background:#28a745;color:white!important;}
+        .logout-btn{color:#ef4444!important;}
+
+        .menu-toggle{
+            display:none;
+            flex-direction:column;
+            background:none;
+            border:none;
+            cursor:pointer;
+            gap:5px;
+        }
+
+        .menu-toggle .bar{
+            width:22px;
+            height:3px;
+            background:#cbd5e1;
+            border-radius:2px;
+            transition:.3s;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-container{
+            max-width:480px;
+            margin:30px auto;
+            background:white;
+            padding:25px;
+            border-radius:18px;
+            box-shadow:0 10px 20px rgba(0,0,0,.08);
+        }
+
+        .form-header{
+            background:linear-gradient(135deg,#ff9800,#ff5722);
+            color:white;
+            padding:20px;
+            border-radius:12px;
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        .form-header h2{font-size:22px;margin-bottom:5px;}
+        .form-header p{font-size:14px;opacity:.9;}
+
+        .form-group{margin-bottom:18px;}
+
+        label{
+            display:block;
+            margin-bottom:8px;
+            font-weight:bold;
+            color:#555;
+            font-size:14px;
+        }
+
+        input,select,textarea{
+            width:100%;
+            padding:12px;
+            border:1px solid #ddd;
+            border-radius:10px;
+            font-size:15px;
+            outline:none;
+            background:#fafafa;
+        }
+
+        input:focus,select:focus,textarea:focus{
+            border-color:#ff5722;
+            background:#fff;
+        }
+
+        textarea{
+            resize:none;
+            height:90px;
+        }
+
+        .btn-submit{
+            width:100%;
+            padding:14px;
+            background:#ff5722;
+            color:white;
+            border:none;
+            border-radius:10px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .btn-submit:hover{
+            background:#e64a19;
+        }
+
+        .btn-back{
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            color:#ff9800;
+            text-decoration:none;
+            font-size:14px;
+            font-weight:bold;
+        }
+
+        .success-msg{
+            background:#e8f5e9;
+            color:#2e7d32;
+            padding:15px;
+            border-radius:10px;
+            text-align:center;
+            margin-bottom:20px;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .menu-toggle{display:flex;}
+
+            .nav-links{
+                display:none;
+                flex-direction:column;
+                position:absolute;
+                top:60px;
+                left:0;
+                width:100%;
+                background:#1a1c23;
+                padding:20px;
+                gap:12px;
+            }
+
+            .nav-links.active{
+                display:flex;
+            }
+
+            .nav-item{
+                width:100%;
+                text-align:center;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="main-navbar">
+
+    <div class="nav-container">
+
+        <a href="/" class="nav-logo">🚗 GarageGo</a>
+
+        <button class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <ul class="nav-links" id="nav-links-menu">
+
+            <li><a href="/" class="nav-item">Home</a></li>
+
+            <li><a href="{% url 'car_bazaar:car_marketplace' %}" class="nav-item">Buy Cars</a></li>
+
+            <li><a href="{% url 'car_bazaar:sell_car' %}" class="nav-item sell-btn">➕ Sell Your Car</a></li>
+
+            {% if user.is_authenticated %}
+
+                {% if user.is_superuser %}
+                    <li><a href="{% url 'owner_dashboard' %}" class="nav-item admin-badge">👑 Owner Desk</a></li>
+                {% else %}
+                    <li><a href="{% url 'mechanic_dashboard' %}" class="nav-item dash-badge">🛠 Dashboard</a></li>
+                {% endif %}
+
+                <li><a href="{% url 'mechanic_logout' %}" class="nav-item logout-btn">Logout</a></li>
+
+            {% else %}
+                <li><a href="{% url 'mechanic_login' %}" class="nav-item">Sign In</a></li>
+            {% endif %}
+
+        </ul>
+
+    </div>
+
+</nav>
+
+<!-- ================= FORM ================= -->
+
+<div class="form-container">
+
+    <div class="form-header">
+        <h2>🛠️ Mechanic Registration</h2>
+        <p>GarageGo Se Judein Aur Apne Grahak Badhayein</p>
+    </div>
+
+    {% if success_message %}
+        <div class="success-msg">{{ success_message }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Username / Login Name:</label>
+            <input type="text" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number:</label>
+            <input type="text" name="phone_number" required>
+        </div>
+
+        <div class="form-group">
+            <label>Shop/Garage Name:</label>
+            <input type="text" name="shop_name" required>
+        </div>
+
+        <div class="form-group">
+            <label>District:</label>
+            <select name="district" required>
+                <option value="">-- Select District --</option>
+                {% for dist in districts %}
+                    <option value="{{ dist.id }}">{{ dist.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Full Address:</label>
+            <textarea name="address" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Services:</label>
+
+            <div style="background:#fff;border:1px solid #ddd;padding:15px;border-radius:12px;margin-top:10px;">
+
+                {% for cat in categories %}
+
+                <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <input type="checkbox" name="service_{{ cat.id }}">
+                        {{ cat.name }}
+                    </div>
+
+                    <input type="number" name="price_{{ cat.id }}" placeholder="Price">
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn-submit">
+            Profile Verification Ke Liye Bhejein
+        </button>
+
+        <a href="{% url 'home' %}" class="btn-back">← Wapas Home Page Par Jao</a>
+
+    </form>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+
+const mobileMenu=document.getElementById("mobile-menu");
+const navLinks=document.getElementById("nav-links-menu");
+
+mobileMenu.addEventListener("click",function(){
+    navLinks.classList.toggle("active");
+
+    const bars=mobileMenu.querySelectorAll(".bar");
+
+    if(navLinks.classList.contains("active")){
+        bars[0].style.transform="rotate(-45deg) translate(-5px,6px)";
+        bars[1].style.opacity="0";
+        bars[2].style.transform="rotate(45deg) translate(-4px,-5px)";
+    }else{
+        bars[0].style.transform="none";
+        bars[1].style.opacity="1";
+        bars[2].style.transform="none";
+    }
+});
+
+});
+</script>
+
+</body>
+</html>

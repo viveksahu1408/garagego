@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GarageGo - Car Bazaar</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:#f3f5fa; color:#333; }
+        
+        /* 📱 PREMIUM RESPONSIVE NAVBAR CSS */
+        .main-navbar { 
+            background: #1a1c23; 
+            padding: 12px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+            width: 100%;
+        }
+        .nav-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: 900px; 
+            margin: auto; 
+        }
+        .nav-logo { 
+            color: #ff5722; 
+            font-size: 22px; 
+            font-weight: 700; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            align-items: center; 
+            gap: 15px; 
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item { 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 500; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            transition: all 0.25s ease; 
+        }
+        .nav-item:hover { 
+            color: #fff; 
+            background: rgba(255,255,255,0.08); 
+        }
+        
+        .sell-btn { background: #ff5722; color: white !important; font-weight: 600; }
+        .sell-btn:hover { background: #e64a19 !important; }
+        .admin-badge { background: #007bff; color: white !important; }
+        .dash-badge { background: #28a745; color: white !important; }
+        .logout-btn { color: #ef4444 !important; }
+
+        /* Hamburger Button */
+        .menu-toggle { 
+            display: none; 
+            flex-direction: column; 
+            background: none;
+            border: none;
+            cursor: pointer; 
+            gap: 5px; 
+            padding: 5px;
+        }
+        .menu-toggle .bar { 
+            width: 22px; 
+            height: 3px; 
+            background: #cbd5e1; 
+            border-radius: 2px; 
+            transition: 0.3s;
+        }
+
+        /* Core Content Container */
+        .container { width:100%; max-width:900px; margin:auto; padding: 20px 15px; }
+        
+        .header { text-align:center; padding:30px 0; background: linear-gradient(135deg,#ff5722,#e64a19); color:white; border-radius:16px; margin-bottom:20px; }
+        
+        /* Filter Strip */
+        .filter-box { background:white; padding:15px; border-radius:12px; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.05); display:flex; gap:10px; align-items:center; }
+        select { flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:15px; background: white; }
+        .btn-search { background:#333; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; transition: 0.2s; }
+        .btn-search:hover { background: #000; }
+        
+        /* Product Cards Grid */
+        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; }
+        .car-card { background:white; border-radius:14px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.04); border:1px solid #eee; padding:15px; display:flex; flex-direction:column; justify-content:space-between; }
+        
+        .price-tag { font-size:22px; font-weight:bold; color:#2e7d32; margin:10px 0; }
+        .spec-item { font-size:13px; color:#666; background:#f5f5f5; padding:4px 8px; border-radius:6px; display:inline-block; margin:2px; }
+        
+        /* Dynamic Secure Call Button */
+        .btn-call-owner { background:#ff5722; color:white; text-decoration:none; text-align:center; padding:12px; border-radius:10px; font-weight:bold; display:block; margin-top:15px; transition:0.3s; }
+        .btn-call-owner:hover { background:#e64a19; }
+
+        /* 📱 RESPONSIVE MOBILE BREAKPOINT FOR NAVBAR & FILTERS */
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .nav-links { 
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                width: 100%; 
+                background: #1a1c23; 
+                padding: 20px; 
+                gap: 12px; 
+                box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+                border-top: 1px solid rgba(255,255,255,0.05);
+            }
+            .nav-links.active { display: flex; }
+            .nav-item { width: 100%; text-align: center; padding: 12px; font-size: 15px; }
+            
+            /* Responsive Filter layout on mobile */
+            .filter-box { flex-direction: column; align-items: stretch; }
+            .btn-search { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="main-navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">🚗 GarageGo</a>
+        
+        <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        
+        <ul class="nav-links" id="nav-links-menu">
+            <li><a href="/" class="nav-item">Home</a></li>
+            <li><a href="{% url 'car_bazaar:car_marketplace' %}" class="nav-item">Buy Cars</a></li>
+            <li><a href="{% url 'car_bazaar:sell_car' %}" class="nav-item sell-btn">➕ Sell Your Car</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <li><a href="{% url 'owner_dashboard' %}" class="nav-item admin-badge">👑 Owner Desk</a></li>
+                {% else %}
+                    <li><a href="{% url 'mechanic_dashboard' %}" class="nav-item dash-badge">🛠️ Dashboard</a></li>
+                {% endif %}
+                <li><a href="{% url 'mechanic_logout' %}" class="nav-item logout-btn">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'mechanic_login' %}" class="nav-item">Sign In</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header">
+        <h1>🚗 GarageGo Car Bazaar</h1>
+        <p>Verified Pre-Owned Cars (Direct Dealer Desk Support)</p>
+    </div>
+
+    <form method="GET" class="filter-box">
+        <select name="city">
+            <option value="">-- Saari Cities Ki Gadiyan Dekhein --</option>
+            {% for city in cities %}
+                <option value="{{ city.id }}" {% if selected_city == city.id|stringformat:"s" %}selected{% endif %}>📍 {{ city.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-search">Filter Lagao</button>
+    </form>
+
+    <div class="grid">
+        {% for car in listings %}
+            <div class="car-card">
+                {% if car.image_front %}
+                    <img src="{{ car.image_front.url }}" alt="Car Image" style="width:100%; height:180px; object-fit:cover; border-radius:10px; margin-bottom:12px;">
+                {% else %}
+                    <div style="width:100%; height:180px; background:#ddd; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">🚗 No Photo</div>
+                {% endif %}
+                
+                <div>
+                    <span style="font-size:12px; font-weight:bold; color:#ff5722; text-transform:uppercase;">📍 {{ car.city.name }}</span>
+                    <h3 style="margin-top:4px; font-size:18px;">{{ car.brand }} {{ car.car_name }}</h3>
+                    
+                    <div style="margin-top:8px; margin-bottom:10px;">
+                        <span class="spec-item">🗓️ {{ car.model_year }}</span>
+                        <span class="spec-item">⛽ {{ car.fuel_type }}</span>
+                        <span class="spec-item">🛣️ {{ car.kms_driven }} KM</span>
+                    </div>
+                    
+                    <div class="price-tag">₹{{ car.expected_price|floatformat:0 }}</div>
+                    <p style="font-size:13px; color:#555;">"{{ car.description }}"</p>
+                </div>
+                
+                <a href="tel:{{ owner_support_number }}" class="btn-call-owner">📞 Deal Desk Se Baat Karein</a>
+            </div>
+        {% empty %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 12px; color: #777;">
+                <h3>Abhi is city me koi gadi listed nahi hai! 🚗</h3>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links-menu');
+
+        mobileMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            
+            // Hamburger dynamic transformation
+            const bars = mobileMenu.querySelectorAll('.bar');
+            if(navLinks.classList.contains('active')) {
+                bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                bars[1].style.opacity = '0';
+                bars[2].style.transform = 'rotate(45deg) translate(-4px, -5px)';
+            } else {
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

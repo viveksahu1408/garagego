@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GarageGo - Find Mechanics</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+        }
+
+        body{
+            background:#f3f5fa;
+            color:#333;
+        }
+
+        /* 📱 PREMIUM RESPONSIVE NAVBAR CSS */
+        .main-navbar { 
+            background: #1a1c23; 
+            padding: 12px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+            width: 100%;
+        }
+        .nav-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+        .nav-logo { 
+            color: #ff5722; 
+            font-size: 22px; 
+            font-weight: 700; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            align-items: center; 
+            gap: 15px; 
+            margin: 0;
+            padding: 0;
+        }
+        .nav-item { 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 500; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            transition: all 0.25s ease; 
+        }
+        .nav-item:hover { 
+            color: #fff; 
+            background: rgba(255,255,255,0.08); 
+        }
+        
+        .sell-btn { background: #ff5722; color: white !important; font-weight: 600; }
+        .sell-btn:hover { background: #e64a19 !important; }
+        .admin-badge { background: #007bff; color: white !important; }
+        .dash-badge { background: #28a745; color: white !important; }
+        .logout-btn { color: #ef4444 !important; }
+
+        /* Hamburger Button */
+        .menu-toggle { 
+            display: none; 
+            flex-direction: column; 
+            background: none;
+            border: none;
+            cursor: pointer; 
+            gap: 5px; 
+            padding: 5px;
+        }
+        .menu-toggle .bar { 
+            width: 22px; 
+            height: 3px; 
+            background: #cbd5e1; 
+            border-radius: 2px; 
+            transition: 0.3s;
+        }
+
+        /* Core Content Container */
+        .container{
+            width:95%;
+            max-width:1200px;
+            margin:25px auto;
+        }
+
+        /* Header */
+        .header{
+            background:linear-gradient(135deg,#ff9800,#ff5722);
+            color:white;
+            padding:45px 20px;
+            border-radius:18px;
+            text-align:center;
+            margin-bottom:25px;
+            box-shadow:0 10px 20px rgba(255,87,34,.2);
+        }
+
+        .header h1{
+            font-size:38px;
+            margin-bottom:8px;
+            font-weight: 800;
+        }
+
+        .header p{
+            opacity:.95;
+            font-size:16px;
+        }
+
+        /* Filter Section */
+        .filter-section{
+            background:white;
+            padding:20px;
+            border-radius:15px;
+            box-shadow:0 6px 15px rgba(0,0,0,.04);
+            margin-bottom:25px;
+        }
+
+        label{
+            display:block;
+            margin-bottom:10px;
+            font-weight:bold;
+            color:#444;
+            font-size: 15px;
+        }
+
+        select{
+            width:100%;
+            padding:14px;
+            border:1px solid #e2e8f0;
+            border-radius:10px;
+            font-size:16px;
+            outline:none;
+            background-color: #fff;
+            transition: 0.3s;
+        }
+        select:focus {
+            border-color: #ff5722;
+            box-shadow: 0 0 0 3px rgba(255,87,34,0.1);
+        }
+
+        /* Categories Horizontal Slider */
+        .category-container{
+            display:flex;
+            overflow-x:auto;
+            gap:10px;
+            padding: 5px 2px 12px 2px;
+            margin-bottom:25px;
+            scrollbar-width:none;
+        }
+
+        .category-container::-webkit-scrollbar{
+            display:none;
+        }
+
+        .category-btn{
+            text-decoration:none;
+            padding:11px 20px;
+            border-radius:25px;
+            background:white;
+            color:#555;
+            border:1px solid #e2e8f0;
+            white-space:nowrap;
+            font-weight:600;
+            font-size: 14px;
+            transition:.25s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .category-btn:hover{
+            background:#ff9800;
+            color:white;
+            border-color: #ff9800;
+            transform: translateY(-1px);
+        }
+
+        .category-btn.active{
+            background:#ff5722;
+            color:white;
+            border-color:#ff5722;
+            box-shadow: 0 4px 10px rgba(255,87,34,0.3);
+        }
+
+        /* Cards Grid */
+        .mechanic-list{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+            gap:20px;
+        }
+
+        .mechanic-card{
+            background:white;
+            border-radius:16px;
+            padding:22px;
+            box-shadow:0 6px 18px rgba(0,0,0,.03);
+            border: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition:.3s;
+        }
+
+        .mechanic-card:hover{
+            transform:translateY(-6px);
+            box-shadow:0 12px 22px rgba(0,0,0,.08);
+        }
+
+        .shop-name{
+            color:#ff5722;
+            font-size:24px;
+            margin-bottom:8px;
+            font-weight: 700;
+        }
+
+        .district-badge{
+            display:inline-block;
+            background:#fff3e0;
+            color:#ff5722;
+            padding:6px 14px;
+            border-radius:20px;
+            font-size:13px;
+            margin-bottom:15px;
+            font-weight:700;
+            align-self: flex-start;
+        }
+
+        .info-text{
+            margin:10px 0;
+            color:#555;
+            line-height:1.6;
+            font-size: 14px;
+        }
+
+        .services-tags{
+            margin-top:15px;
+            padding-top:15px;
+            border-top:1px solid #f1f5f9;
+            color:#444;
+        }
+
+        .service-chip{
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            width: 100%; 
+            margin: 5px 0; 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            color: #334155; 
+            padding: 9px 14px; 
+            border-radius: 10px; 
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-call{
+            display:block;
+            width:100%;
+            margin-top:20px;
+            padding:14px;
+            text-align:center;
+            background:#28a745;
+            color:white;
+            text-decoration:none;
+            border-radius:12px;
+            font-size:17px;
+            font-weight:bold;
+            transition:.2s;
+            box-shadow: 0 4px 12px rgba(40,167,69,0.2);
+        }
+
+        .btn-call:hover{
+            background:#218838;
+            box-shadow: 0 6px 15px rgba(40,167,69,0.3);
+        }
+
+        .empty{
+            grid-column:1/-1;
+            background:white;
+            padding:50px 40px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 8px 18px rgba(0,0,0,.04);
+            color: #666;
+        }
+
+        /* 📱 MOBILE RESPONSIVE UI CORRECTIONS */
+        @media(max-width:768px){
+            .menu-toggle { display: flex; }
+            .nav-links { 
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                width: 100%; 
+                background: #1a1c23; 
+                padding: 20px; 
+                gap: 12px; 
+                box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+                border-top: 1px solid rgba(255,255,255,0.05);
+            }
+            .nav-links.active { display: flex; }
+            .nav-item { width: 100%; text-align: center; padding: 12px; font-size: 15px; }
+
+            .container{
+                width:92%;
+                margin: 15px auto;
+            }
+
+            .header{
+                padding:30px 15px;
+                border-radius: 14px;
+                margin-bottom: 20px;
+            }
+
+            .header h1{
+                font-size:28px;
+            }
+
+            .header p{
+                font-size:14px;
+            }
+
+            .mechanic-list{
+                grid-template-columns:1fr;
+                gap: 16px;
+            }
+
+            .mechanic-card{
+                padding:18px;
+                border-radius: 14px;
+            }
+
+            .shop-name{
+                font-size:21px;
+            }
+
+            .btn-call{
+                font-size:16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="main-navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">🚗 GarageGo</a>
+        
+        <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        
+        <ul class="nav-links" id="nav-links-menu">
+            <li><a href="/" class="nav-item">Home</a></li>
+            <li><a href="{% url 'car_bazaar:car_marketplace' %}" class="nav-item">Buy Cars</a></li>
+            <li><a href="{% url 'car_bazaar:sell_car' %}" class="nav-item sell-btn">➕ Sell Your Car</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <li><a href="{% url 'owner_dashboard' %}" class="nav-item admin-badge">👑 Owner Desk</a></li>
+                {% else %}
+                    <li><a href="{% url 'mechanic_dashboard' %}" class="nav-item dash-badge">🛠️ Dashboard</a></li>
+                {% endif %}
+                <li><a href="{% url 'mechanic_logout' %}" class="nav-item logout-btn">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'mechanic_login' %}" class="nav-item">Sign In</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header">
+        <h1>🚗 GarageGo</h1>
+        <p>Find Trusted Mechanics Near You</p>
+    </div>
+
+    <div style="text-align: right; margin-bottom: 20px;">
+        <a href="{% url 'mechanic_register' %}" style="color: #ff5722; font-weight: bold; text-decoration: none; font-size: 14px; background: #fff3e0; padding: 10px 18px; border-radius: 25px; display: inline-block; border: 1px solid #ffe0b2; transition: 0.2s;">
+            🛠️ Kya Aap Mechanic Hain? Yahan Judein
+        </a>
+    </div>
+
+    <div class="filter-section">
+        <form method="GET">
+            <label for="district">Choose Your District</label>
+            {% if selected_category %}
+                <input type="hidden" name="category" value="{{ selected_category }}">
+            {% endif %}
+
+            <select name="district" id="district" onchange="this.form.submit()">
+                <option value="">All Districts</option>
+                {% for dist in districts %}
+                    <option value="{{ dist.id }}" {% if dist.id|stringformat:"i" == selected_district %}selected{% endif %}>
+                        📍 {{ dist.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <label style="margin-bottom:12px; display: block;">Choose Service</label>
+
+    <div class="category-container">
+        <a href="?district={{ selected_district|default:'' }}"
+           class="category-btn {% if not selected_category %}active{% endif %}">
+            All Services
+        </a>
+
+        {% for cat in categories %}
+            <a href="?district={{ selected_district|default:'' }}&category={{ cat.id }}"
+               class="category-btn {% if cat.id|stringformat:'i' == selected_category %}active{% endif %}">
+                {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="mechanic-list">
+        {% if mechanics %}
+            {% for mechanic in mechanics %}
+                <div class="mechanic-card">
+                    <div>
+                        <div class="shop-name">
+                            🔧 {{ mechanic.shop_name }}
+                        </div>
+
+                        <span class="district-badge">
+                            📍 {{ mechanic.district.name }}
+                        </span>
+
+                        <div class="info-text">
+                            <strong>Address:</strong><br>
+                            <span style="color: #64748b;">{{ mechanic.address }}</span>
+                        </div>
+
+                        <div class="services-tags">
+                            <strong style="font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Available Services & Rates:</strong>
+                            <div style="margin-top: 8px;">
+                                {% for sp in mechanic.mechanicserviceprice_set.all %}
+                                    <span class="service-chip">
+                                        <span>⚙️ {{ sp.service.name }}</span>
+                                        <strong style="color: #2e7d32;">Anumanit: ₹{{ sp.base_price|floatformat:0 }}</strong>
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="tel:{{ mechanic.user.phone_number }}" class="btn-call" onclick="logCall('{{ mechanic.id }}')">
+                        📞 Call Mechanic
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <h2 style="font-size: 22px; color: #1e293b; margin-bottom: 8px;">😔 No Mechanics Found</h2>
+                <p style="color: #94a3b8; font-size: 15px;">No mechanic is available for the selected filter right now.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links-menu');
+
+        mobileMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            
+            // Hamburger animation transition effect
+            const bars = mobileMenu.querySelectorAll('.bar');
+            if(navLinks.classList.contains('active')) {
+                bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+                bars[1].style.opacity = '0';
+                bars[2].style.transform = 'rotate(45deg) translate(-4px, -5px)';
+            } else {
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
+            }
+        });
+    });
+
+    function logCall(mechanicId) {
+        const csrfToken = '{{ csrf_token }}';
+        fetch(`/leads/track-call/${mechanicId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('GarageGo System: Lead recorded!', data);
+        })
+        .catch(error => {
+            console.error('GarageGo System: Error tracking lead:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
